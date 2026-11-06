@@ -1,46 +1,51 @@
-# Meanwhile
+# Achtung!
 
-Meanwhile is a mobile app idea for students, and this folder holds its interactive mockup for HW 1.
+Achtung! is a mobile app idea that trades a bit of mindless scrolling for a bit of German. This folder holds its interactive mockup for HW 1.
 
-The idea is simple. A student's day is full of small gaps: the 80 minutes between a lecture and a lab, the half hour before a meeting. Most of that time disappears into scrolling. Meanwhile finds those gaps, works out how long they will really be, and suggests something that fits. That could be a walk while it's still dry, a call to a friend you haven't spoken to in weeks, a nap, or some studying.
+Every time you open a social app, Achtung! stops you with a short round: five German words on the left, five English meanings on the right, and you match them. Get all five and the app opens. Press any German word and a stern German teacher, Herr Donner, says it out loud so you hear how it's really pronounced.
+
+The goal is simple: less brain rot, more vocabulary.
 
 ## What it does
 
-- **Predicts your real gaps.** Lectures and meetings often run over. Meanwhile learns how late each of your recurring events usually ends and starts the gap then, not when the timetable says.
-- **Predicts your energy.** A daily energy curve decides whether a hard task (a workout, a cover letter) or an easy one (a text to your mum) suits the gap.
-- **Recommends what to do.** Each gap gets a short ranked list. Every suggestion says why it was picked.
-- **Learns from you.** 👍, 👎 and a "how was it?" question after each activity change what you see next.
+- **Gates your social apps.** You choose which apps to guard. Opening one starts a 30-second word round first.
+- **Picks the right five words (recommender).** It chooses words you are about to forget, mixes in new ones at your level, avoids repeats from the last round and keeps the topics varied. It tells you why it picked them.
+- **Predicts what you will forget (predictive model).** Each word has a memory score based on a forgetting curve. Getting a word right first try makes the memory last longer. A miss makes it weaker. The Progress tab shows a seven-day memory forecast.
+- **Shouts the words.** Tap a German word to hear it. A wrong match gets a "Nein!", and finishing a round gets a "Na endlich!".
 
 ## Screens to try
 
-1. **Intro.** Four steps: welcome, link a calendar, pick interests, pick your sharpest time of day.
-2. **Today.** Shows the current free window, the energy curve, and a timeline of classes and gaps.
-3. **Gap detail.** Tap any green gap to see ranked suggestions with match scores and reasons.
-4. **Session.** Start an activity to get a countdown. Finish it and rate it.
-5. **Taste.** See what the app thinks you like, change your chronotype, bring back hidden ideas.
-6. **Insights.** Weekly free time, today's overrun predictions, and your energy pattern.
+1. **Intro.** Pick the apps to guard, your German level (A1 to B1), and meet Herr Donner.
+2. **Home.** A fake phone home screen. Tap an app with a 🔒 to see the gate.
+3. **Gate.** Tap a German word, then its English meaning. Mistakes shake the card.
+4. **Result and unlock.** See which words you got right first try, replay any word, then open the app.
+5. **Progress.** Rounds done, strong words, memory forecast, and the words about to slip.
+6. **Words.** All the words at your level, weakest first, with a button to hear each one.
+7. **Settings.** Guarded apps, level, German mode on or off, replay the intro, reset progress.
 
-A good first run: finish the intro, tap **Start** on the green card, tap **I'm done**, rate it, and then watch the suggestions change on the Today tab.
+A good first run: finish the intro, tap Scroll on the home screen, get one match wrong on purpose, finish the round, then look at Progress and Words.
 
 ## Running it
 
-It is plain HTML, CSS and JavaScript, with no build step and no dependencies. Open `index.html` in a browser. On a desktop it shows inside a phone frame, and on a phone it fills the screen.
+It is plain HTML, CSS and JavaScript, with no build step and no dependencies. Open `index.html` in a browser. Turn your sound on. On a desktop it shows inside a phone frame, and on a phone it fills the screen.
 
 ## What is real and what is faked
 
-The demo day is fixed at Thursday, 10:12. The timetable, weather, overrun history and weekly stats are hard-coded in `data.js`. No calendar is read and nothing leaves the browser. Taste settings are saved in `localStorage` only.
+The three social apps (Scroll, Chirp and Reelz) are invented, and so are the posts. Your starting progress is seeded demo data. Nothing leaves the browser, and your settings are saved in `localStorage` only.
 
-The scoring itself does run, so the recommendations react to your clicks. It lives in `app.js`:
+These parts do run:
 
-- **Recommender.** Each activity gets a score from four parts: how much you like its tags (40%), how well it matches predicted energy (25%), how well it fits the length of the gap (15%), and context such as weather and deadlines (20%). Activities that don't fit the gap are dropped.
-- **Predictive model.** Overrun minutes and the energy curve are fixed numbers here. In the real app they would come from a model trained on each user's calendar history and check-ins.
+- **Word picker.** Each word gets a score from how likely you are to have forgotten it (60%) and how well it fits your level (25%), minus a penalty if it was in the last round. At most two words per topic. This is a hand-made formula, not a trained model.
+- **Forgetting curve.** The chance you remember a word is `exp(-days since review / stability)`. Stability doubles after a first-try success and shrinks to 60% after a miss.
+- **The voice.** Herr Donner uses your browser's built-in German text-to-speech, preferring a male voice. German mode makes him faster, lower and louder. Which voices you hear depends on what is installed on your device, so a male voice is not guaranteed everywhere. Real acted voice recordings could replace it later.
 
 ## Where this could go
 
-- Read a real calendar and learn overruns per event type.
-- Replace the hand-made weights with a proper recommender (for example matrix factorisation or a contextual bandit) trained on accepted and skipped suggestions.
-- Add real weather and walking-distance data.
-- Let friends who share a gap find each other.
+- Block real apps. This needs operating system support, such as app-usage access on Android and Screen Time or Shortcuts on iOS, which still has to be researched.
+- Replace the formula with a proper spaced repetition model trained on real answers.
+- Record real voice lines for Herr Donner, with different moods.
+- Add sentences, listening rounds and a bigger word list.
+- Let friends share streaks.
 
 ## Files
 
@@ -48,5 +53,5 @@ The scoring itself does run, so the recommendations react to your clicks. It liv
 | --- | --- |
 | `index.html` | Page shell and phone frame |
 | `styles.css` | All styling |
-| `data.js` | Demo timetable, energy curves, activity catalogue |
-| `app.js` | Screens, interactions, and the stand-in recommender and predictor |
+| `data.js` | Word list, fake apps, fake posts |
+| `app.js` | Screens, the gate, the word picker, the memory model and the voice |
